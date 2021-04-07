@@ -76,14 +76,34 @@ describe('test endpoints', () => {
             .send({fishName: 'Steelhead', size: 'Large', freshwater: true, region: 'North America'});
         const response = await request(app)
             .put('/api/v1/fishes/single/1')
-            .send({ column: 'size', value: 'Small'})
+            .send({ column: 'size', value: 'small'})
         const expectation = {
             id: '1',
             fishName: 'Steelhead', 
-            size: 'Small', 
+            size: 'small', 
             freshwater: true, 
             region: 'North America'
         }
         expect(response.body).toEqual(expectation);
+    });
+    it('should delete a fish from the database', async () => {
+        await request(app)
+            .post('/api/v1/fishes')
+            .send({fishName: 'Steelhead', size: 'Large', freshwater: true, region: 'North America'});
+        await request(app)
+            .post('/api/v1/fishes')
+            .send({fishName: 'Salmon', size: 'Medium', freshwater: true, region: 'North America'});
+        await request(app)
+            .delete('/api/v1/fishes/single/2');
+        const response = await request(app)
+            .get('/api/v1/fishes');
+        const expectation = {
+            id: '1',
+            fishName: 'Steelhead', 
+            size: 'Large', 
+            freshwater: true, 
+            region: 'North America'
+        }
+        expect(response.body[0]).toEqual(expectation);
     })
 });
